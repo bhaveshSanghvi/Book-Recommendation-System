@@ -141,6 +141,7 @@ public class RecommendationService {
 	    		b.setAsin(r3.getString(8));
 	    		b.setConfidence(map.get(b.getAsin()));
 	    		if(Double.parseDouble(b.getConfidence())>0.20) {
+	    			b.setConfidence((Double.parseDouble(b.getConfidence())*100)+"");
 	    			list.add(b);
 	    		}
 			}

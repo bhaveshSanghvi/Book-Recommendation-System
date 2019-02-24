@@ -78,8 +78,6 @@ public class NetworkClient {
 			e.printStackTrace();
 
 		  }
-		  
-		  System.out.println(list);
 		return list;
 
 		}
