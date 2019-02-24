@@ -11,29 +11,12 @@ public class Book implements Serializable {
     private String link;
     private String imgURL;
     private String ratings;
+    private String confidence;
     
     public Book() {
     	
     }
     
-	@Override
-	public String toString() {
-		return "Book [asin=" + asin + ", title=" + title + ", author=" + author + ", genre=" + genre
-				+ ", publicationYear=" + publicationYear + ", link=" + link + ", imgURL=" + imgURL + ", ratings="
-				+ ratings + "]";
-	}
-	public Book(String asin, String title, String author, String genre, String publicationYear, String link,
-			String imgURL, String ratings) {
-		super();
-		this.asin = asin;
-		this.title = title;
-		this.author = author;
-		this.genre = genre;
-		this.publicationYear = publicationYear;
-		this.link = link;
-		this.imgURL = imgURL;
-		this.ratings = ratings;
-	}
 	public String getAsin() {
 		return asin;
 	}
@@ -81,6 +64,14 @@ public class Book implements Serializable {
 	}
 	public void setRatings(String ratings) {
 		this.ratings = ratings;
+	}
+
+	public String getConfidence() {
+		return confidence;
+	}
+
+	public void setConfidence(String confidence) {
+		this.confidence = confidence;
 	}
 
     

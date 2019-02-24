@@ -15,24 +15,23 @@ public class BookController {
     
     @Autowired
     private RecommendationService recService;
-
-    @RequestMapping(method = RequestMethod.GET, value="/network")
-    public List<Map<String, String>> getNetwork() {
-    	NetworkClient c = new NetworkClient();
-    	return c.getData("156101074X");
-        
-    }
     
     @RequestMapping(method = RequestMethod.GET, value="/books")
     public List<Book> getAllBooks() {
         return bookService.getAllBooks();
     }
 
+    @CrossOrigin(origins="*")
     @RequestMapping(method = RequestMethod.GET, value="/books/title/{title}")
     public List<Book> getBooksByTitle(@PathVariable String title) {
         return bookService.getBooksByTitle(title);
     }
-
+    
+    @CrossOrigin(origins="*")
+    @RequestMapping(method = RequestMethod.GET, value="/books/asin/{asin}")
+    public List<Book> getBooksByAsin(@PathVariable String asin) {
+        return bookService.getBooksByAsin(asin);
+    }
     
     @RequestMapping(method = RequestMethod.GET, value="/books/author/{author}")
     public List<Book> getBooksByAuthor(@PathVariable String author) {
@@ -44,9 +43,16 @@ public class BookController {
         return bookService.getBooksByGenre(genre);
     }
     
-    @RequestMapping(method = RequestMethod.GET, value="/reco/{title}")
-    public List<Book> getRecommendation(@PathVariable String title) {
-        return recService.getRecommendation(title);
+    @CrossOrigin(origins="*")
+    @RequestMapping(method = RequestMethod.GET, value="/reco/title/{title}")
+    public List<Book> getRecommendationByTitle(@PathVariable String title) {
+        return recService.getRecommendationTitle(title);
+    }
+    
+    @CrossOrigin(origins="*")
+    @RequestMapping(method = RequestMethod.GET, value="/reco/asin/{asin}")
+    public List<Book> getRecommendationByAsin(@PathVariable String asin) {
+        return recService.getRecommendationByAsin(asin);
     }
     
     

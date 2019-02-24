@@ -7,8 +7,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RecommendationService {
 	
-	public List<Book> getRecommendation(String title) {
+	public List<Book> getRecommendationTitle(String title) {
 		List<Book> list = new ArrayList<Book>();
 		List<Recommendation> recoList = new ArrayList<>();
 		    	
@@ -28,8 +29,8 @@ public class RecommendationService {
 			Statement s = conn.createStatement();
 			
 			r1 = s.executeQuery("Select * from book where title like '%"+title+"%'");
-			String asins = "";
 			
+			String asins = "";
 			while(r1.next()) {
 				if(r1.getString(8)!=null && r1.getString(8)!="null") {
 					asins = asins+"'"+r1.getString(8).trim()+"',";
@@ -37,7 +38,6 @@ public class RecommendationService {
 	    	}
 			
 			asins = asins.substring(0, asins.length()-1);
-			System.out.println("asins = "+asins);
 			
 			r2 = s.executeQuery("Select * from Recommendation where asin IN ("+asins+")");
 			
@@ -50,32 +50,16 @@ public class RecommendationService {
 	    	}
 			
 			List<String> recommendedAsins = new ArrayList<String>();
-			//List<String> recommendedConfidence = new ArrayList<String>();
-			
-			String reccoms[];
 			for(Recommendation r: recoList) {
-				//reccoms = r.getPrediction().split(",");
 				recommendedAsins.addAll(Arrays.asList(r.getPrediction().split(",")));
-				//recommendedConfidence.addAll(Arrays.asList(r.getConfidence().split(",")));
 			}
 			
-			System.out.println("recommdedAsins: ="+recommendedAsins);
-			//System.out.println("recommded Confidence: ="+recommendedConfidence);
-			
-			
 			String resultAsin = "";
-			//String resultConfidence = "";
-			
 			for(String st: recommendedAsins) {
 				resultAsin = resultAsin + "'"+st.trim()+"',";
 			}
 			
 			resultAsin = resultAsin.substring(0, resultAsin.length()-1);
-			//System.out.println("recommdedAsins string: ="+resultAsin);
-			
-			//resultConfidence = resultConfidence.substring(0, resultConfidence.length()-1);
-			//System.out.println("resultConfidence string: ="+resultConfidence);
-			
 			
 			r3 = s.executeQuery("Select * from book where asin IN ("+resultAsin+")");
 			
@@ -93,10 +77,79 @@ public class RecommendationService {
 			}
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	return list;
+	}
+	
+	public List<Book> getRecommendationByAsin(String asin) {
+		List<Book> list = new ArrayList<Book>();
+		List<Recommendation> recoList = new ArrayList<>();
+		    	
+    	ResultSet r2,r3;
+		try {
+
+			DriverManager.deregisterDriver(new org.postgresql.Driver());
+			Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres","postgres", "qwer");		
+			Statement s = conn.createStatement();
+			
+			r2 = s.executeQuery("Select * from Recommendation where asin = '"+asin+"'");
+			
+			while(r2.next()) {
+				Recommendation b = new Recommendation();
+	    		b.setAsin(r2.getString(1));
+	    		b.setConfidence(r2.getString(3));
+	    		b.setPrediction(r2.getString(2));
+	    		recoList.add(b);
+	    	}
+			
+			Map<String,String> map = new HashMap<>();
+			
+			
+			List<String> recommendedAsins = new ArrayList<String>();
+			List<String> recommendedConfidence = new ArrayList<String>();
+			
+			for(Recommendation r: recoList) {
+				recommendedAsins.addAll(Arrays.asList(r.getPrediction().split(",")));
+				recommendedConfidence.addAll(Arrays.asList(r.getConfidence().split(",")));
+			}
+			
+			String resultAsin = "";
+			
+			for(String st: recommendedAsins) {
+				resultAsin = resultAsin + "'"+st.trim()+"',";	
+			}
+			
+			for(int i=0;i<recommendedAsins.size();i++) {
+				map.put(recommendedAsins.get(i).trim(),recommendedConfidence.get(i).trim());
+			}
+			
+			resultAsin = resultAsin.substring(0, resultAsin.length()-1);
+			
+			r3 = s.executeQuery("Select * from book where asin IN ("+resultAsin+")");
+			
+			while(r3.next()) {
+				Book b = new Book();
+	    		b.setTitle(r3.getString(1));
+	    		b.setAuthor(r3.getString(2));
+	    		b.setGenre(r3.getString(3));
+	    		b.setPublicationYear(r3.getString(4));
+	    		b.setLink(r3.getString(5));
+	    		b.setImgURL(r3.getString(6));
+	    		b.setRatings(r3.getString(7));
+	    		b.setAsin(r3.getString(8));
+	    		b.setConfidence(map.get(b.getAsin()));
+	    		if(Double.parseDouble(b.getConfidence())>0.20) {
+	    			list.add(b);
+	    		}
+			}
+			
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
     	
     	return list;
 	}
 }
+

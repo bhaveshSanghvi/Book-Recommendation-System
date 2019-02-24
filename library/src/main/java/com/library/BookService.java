@@ -47,6 +47,48 @@ public class BookService {
     	return list;
     }
     
+    public List<Book> getBooksByAsin(String asin) {
+    	List<Book> list = new ArrayList<Book>();
+    	
+    	ResultSet r;
+		try {
+
+			DriverManager.deregisterDriver(new org.postgresql.Driver());
+			Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres","postgres", "qwer");
+			Statement s = conn.createStatement();
+			
+			if(asin!=null) {
+				r = s.executeQuery("Select * from book where asin = '"+asin+"'");
+				
+				while(r.next()) {
+					Book b = new Book();
+		    		b.setTitle(r.getString(1));
+		    		b.setGenre(r.getString(3));
+		    		b.setImgURL(r.getString(6));
+		    		b.setRatings(r.getString(7));
+		    		b.setAsin(r.getString(8));
+		    		b.setLink("http://asin.info/a/"+asin);
+		    		b.setImgURL("http://images.amazon.com/images/P/"+asin);
+		    		
+		    		
+		    			System.out.println("///");
+			    		NetworkClient c = new NetworkClient();
+			        	List<Map<String, String>> data = c.getData(asin);
+			        	if(data!=null && !data.isEmpty() && data.get(0)!=null && data.get(0).get("author")!=null && data.get(0).get("pubyear")!=null) {
+			        		b.setAuthor(data.get(0).get("author"));
+			        		b.setPublicationYear(data.get(0).get("pubyear"));
+			        	}
+		    		list.add(b);
+		    	}
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return list;
+    }
+    
     public List<Book> getBooksByTitle(String title) {
     	List<Book> list = new ArrayList<Book>();
     	
@@ -63,11 +105,12 @@ public class BookService {
 				Book b = new Book();
 	    		b.setTitle(r.getString(1));
 	    		b.setGenre(r.getString(3));
-	    		b.setLink(r.getString(5));
 	    		b.setImgURL(r.getString(6));
 	    		b.setRatings(r.getString(7));
 	    		b.setAsin(r.getString(8));
-	    		System.out.println(r.getString(8));
+	    		b.setLink("http://asin.info/a/"+r.getString(8));
+	    		b.setImgURL("http://images.amazon.com/images/P/"+r.getString(8));
+	    		
 	    		if(r.getString(8)!=null) {
 	    			System.out.println("///");
 		    		NetworkClient c = new NetworkClient();
@@ -115,10 +158,8 @@ public class BookService {
 	    	}
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	
     	return list;
     }
     
