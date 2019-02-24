@@ -140,10 +140,19 @@ public class RecommendationService {
 	    		b.setRatings(r3.getString(7));
 	    		b.setAsin(r3.getString(8));
 	    		b.setConfidence(map.get(b.getAsin()));
+	    		NetworkClient c = new NetworkClient();
+	    		
+	        	List<Map<String, String>> data = c.getData(b.getAsin());
+	        	if(data!=null && !data.isEmpty() && data.get(0)!=null && data.get(0).get("author")!=null && data.get(0).get("pubyear")!=null) {
+	        		b.setAuthor(data.get(0).get("author"));
+	        		b.setPublicationYear(data.get(0).get("pubyear"));
+	        	}
 	    		if(Double.parseDouble(b.getConfidence())>0.20) {
 	    			b.setConfidence((Double.parseDouble(b.getConfidence())*100)+"");
 	    			list.add(b);
 	    		}
+	    		
+	    		
 			}
 			
 		} catch (SQLException e) {

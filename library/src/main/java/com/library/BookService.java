@@ -70,14 +70,12 @@ public class BookService {
 		    		b.setLink("http://asin.info/a/"+asin);
 		    		b.setImgURL("http://images.amazon.com/images/P/"+asin);
 		    		
-		    		
-		    			System.out.println("///");
-			    		NetworkClient c = new NetworkClient();
-			        	List<Map<String, String>> data = c.getData(asin);
-			        	if(data!=null && !data.isEmpty() && data.get(0)!=null && data.get(0).get("author")!=null && data.get(0).get("pubyear")!=null) {
-			        		b.setAuthor(data.get(0).get("author"));
-			        		b.setPublicationYear(data.get(0).get("pubyear"));
-			        	}
+		    		NetworkClient c = new NetworkClient();
+		        	List<Map<String, String>> data = c.getData(asin);
+		        	if(data!=null && !data.isEmpty() && data.get(0)!=null && data.get(0).get("author")!=null && data.get(0).get("pubyear")!=null) {
+		        		b.setAuthor(data.get(0).get("author"));
+		        		b.setPublicationYear(data.get(0).get("pubyear"));
+		        	}
 		    		list.add(b);
 		    	}
 			}
