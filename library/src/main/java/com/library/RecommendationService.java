@@ -135,8 +135,8 @@ public class RecommendationService {
 	    		b.setAuthor(r3.getString(2));
 	    		b.setGenre(r3.getString(3));
 	    		b.setPublicationYear(r3.getString(4));
-	    		b.setLink(r3.getString(5));
-	    		b.setImgURL(r3.getString(6));
+	    		b.setLink("http://asin.info/a/"+r3.getString(8));
+	    		b.setImgURL("http://images.amazon.com/images/P/"+r3.getString(8));
 	    		b.setRatings(r3.getString(7));
 	    		b.setAsin(r3.getString(8));
 	    		b.setConfidence(map.get(b.getAsin()));

@@ -54,7 +54,4 @@ public class BookController {
     public List<Book> getRecommendationByAsin(@PathVariable String asin) {
         return recService.getRecommendationByAsin(asin);
     }
-    
-    
-    
 }
